@@ -1,0 +1,16 @@
+---
+import { Tab } from "../components/components.astro";
+import Layout from "../layouts/Layout.astro";
+const tabData = [{title: 'Tab 1', content: 'Content 1'},{title: 'Tab 2', content: '<p>Content 2</p>'},{title: 'Tab 3', content: 'Content 3'},{title: 'Tab 4', content: 'Content 4'},{title: 'Tab 5', content: 'Content 5'},{title: 'Tab 6', content: 'Content 6'}]
+---
+
+<Layout title="Welcome to Astro.">
+	<main>
+		<div class="container mx-auto">
+			<h1 class="mb-5">TEST</h1>
+			<Tab tabs={tabData} activeTabClass="bg-teal-600 text-white" activeTab={2} animation="slide-bottom"/>
+			<Tab tabs={tabData} activeTabClass="bg-teal-600 text-white" activeTab={2} animation="slide-bottom"/>
+			<br>
+		</div>
+	</main>
+</Layout>

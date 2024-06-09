@@ -1,0 +1,85 @@
+---
+interface Props {
+    tabs: Array<{title: string, content: string}>,
+    activeTab?: number
+    activeTabClass?: string
+    defaultTabClass?: string
+    animation?: 'none' | 'fade' | 'scale-up' | 'scale-down' | 'slide-bottom'
+}
+
+const { 
+    tabs, 
+    activeTab = 0, 
+    activeTabClass = 'bg-blue-600 text-white', 
+    defaultTabClass = 'px-4 py-2 rounded transition-all focus:outline-transparent whitespace-nowrap',
+    animation = 'none' 
+    } = Astro.props;
+---
+
+<div
+    x-data=`{ 
+        tabs: ${JSON.stringify(tabs)}, 
+        activeTab: ${activeTab}, 
+        activeTabClass: ${JSON.stringify(activeTabClass)}, 
+        animation: ${JSON.stringify(animation)}, 
+        transition: {
+            'x-transition:enter-start'(){
+                return this.animation === 'fade' ? 'opacity-0' :
+                this.animation === 'scale-up' ? 'opacity-50 scale-95' : 
+                this.animation === 'scale-down' ? 'opacity-5 scale-105' :
+                this.animation === 'slide-bottom' ? 'opacity-0 translate-y-2' : ''
+            },
+            'x-transition:enter-end'(){
+                return this.animation === 'fade' ? 'opacity-100' :
+                this.animation === 'scale-up' ? 'opacity-100 scale-100' :
+                this.animation === 'scale-down' ? 'opacity-100 scale-100':
+                this.animation === 'slide-bottom' ? 'opacity-100 translate-y-0' : ''
+            }
+        }
+    }`
+    class="tabs" 
+    role="tablist" 
+    aria-orientation="horizontal">
+    <!-- Tab Headers -->
+    <ul class="tab-headers flex  gap-4 mb-4 " role="tablist">
+        <template x-for="(tab, index) in tabs" :key="index" role="presentation">
+            <li>
+            <a 
+                :id="'tab-' + index"
+                :class="{[activeTabClass]: activeTab === index, 'bg-gray-200': activeTab !== index }" 
+                @click.prevent="activeTab = index;"
+                @keydown.prevent.tab="activeTab = activeTab + 1 < tabs.length ? activeTab + 1 : 0;"
+                @keydown.prevent.shift.tab="activeTab = (activeTab - 1 + tabs.length) % tabs.length;"
+                @keydown.arrow-right="activeTab = activeTab + 1 < tabs.length ? activeTab + 1 : 0;"
+                @keydown.arrow-left="activeTab = (activeTab - 1 + tabs.length) % tabs.length;"
+                class={defaultTabClass}
+                :aria-selected="activeTab === index"
+                :tabindex="activeTab === index ? 0 : -1"
+                role="tab"
+                x-text="tab.title"
+                type="button"
+                href="#"
+                >
+            </a>
+        </li>
+        </template>
+    </ul>
+    <!-- Tab Contents -->
+    <div class="tab-contents mb-5" tabindex="-1">
+        <template x-for="(tab, index) in tabs" :key="index">
+            <div
+                x-show="activeTab === index"
+                class="p-4 bg-gray-100 rounded shadow transition-all" 
+                :id="'panel-' + index"
+                role="tabpanel" 
+                :aria-labelledby="'tab-' + index"
+                tabindex="-1"
+                x-html="tab.content"
+                :duration="500"
+                x-transition:enter="transition ease-out duration-500"
+                x-bind="transition"
+                >
+            </div>
+        </template>
+    </div>
+</div>
